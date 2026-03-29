@@ -1,16 +1,28 @@
 // Nest - Solana Wallet Module
 // Handles all Solana blockchain interactions
 
+// Type declarations for CDN-loaded libraries
+type SolanaWeb3 = typeof import('@solana/web3.js');
+type SplToken = typeof import('@solana/spl-token');
+
+// Extend Window interface
+declare global {
+  interface Window {
+    solanaWeb3: SolanaWeb3;
+    splToken: SplToken;
+  }
+}
+
 export interface WalletConnection {
   provider: any;
-  publicKey: window.solanaWeb3.PublicKey;
+  publicKey: any;
   connected: boolean;
 }
 
 export class SolanaWallet {
-  private connection: window.solanaWeb3.Connection;
+  private connection: any;
   private walletProvider: any = null;
-  private walletPublicKey: window.solanaWeb3.PublicKey | null = null;
+  private walletPublicKey: any = null;
   private readonly NETWORK = 'mainnet-beta';
   private readonly RPC_URL = 'https://api.mainnet-beta.solana.com';
 
@@ -79,7 +91,7 @@ export class SolanaWallet {
     try {
       const accounts = await this.connection.getParsedTokenAccountsByOwner(
         this.walletPublicKey,
-        { programId: splToken.TOKEN_PROGRAM_ID }
+        { programId: window.splToken.TOKEN_PROGRAM_ID }
       );
       return accounts.value;
     } catch (error) {
@@ -102,7 +114,7 @@ export class SolanaWallet {
     return !!this.walletPublicKey;
   }
 
-  getConnection(): window.solanaWeb3.Connection {
+  getConnection(): any {
     return this.connection;
   }
 
