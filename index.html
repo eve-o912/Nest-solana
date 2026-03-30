@@ -430,7 +430,7 @@
               <div class="chart-title">Verified Data Sources</div>
               <div class="chart-subtitle">Powering your credit signal with ZK-proofs</div>
             </div>
-            <button class="btn btn-primary btn-sm" onclick="showToast('info','Connect','Opening data source connection...')">+ Add Source</button>
+            <button class="btn btn-primary btn-sm" onclick="openAddSourceModal()">+ Add Source</button>
           </div>
           <div class="accounts-grid">
             <div class="account-card">
@@ -504,6 +504,47 @@
     <div class="ai-chat-input">
       <input type="text" id="aiChatInput" placeholder="Ask about your credit or loans..." onkeypress="if(event.key==='Enter')sendAIMessage()">
       <button onclick="sendAIMessage()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Data Source Connection Modal -->
+<div id="addSourceModal" class="modal hidden">
+  <div class="modal-overlay" onclick="closeAddSourceModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Connect Data Source</h3>
+      <button class="modal-close" onclick="closeAddSourceModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">Connect additional financial accounts to improve your credit score.</p>
+      <div class="source-options">
+        <div class="source-option" onclick="connectDataSource('mpesa')">
+          <div class="source-icon">📲</div>
+          <div class="source-name">M-Pesa</div>
+          <div class="source-type">Mobile Money</div>
+        </div>
+        <div class="source-option" onclick="connectDataSource('bank')">
+          <div class="source-icon">🏦</div>
+          <div class="source-name">Bank Account</div>
+          <div class="source-type">KCB, Equity, Co-op</div>
+        </div>
+        <div class="source-option" onclick="connectDataSource('gig')">
+          <div class="source-icon">🚗</div>
+          <div class="source-name">Gig Platform</div>
+          <div class="source-type">Uber, Bolt, Glovo</div>
+        </div>
+        <div class="source-option" onclick="connectDataSource('crypto')">
+          <div class="source-icon">🔗</div>
+          <div class="source-name">Crypto Wallet</div>
+          <div class="source-type">Solana, Ethereum</div>
+        </div>
+        <div class="source-option" onclick="connectDataSource('trade')">
+          <div class="source-icon">🛒</div>
+          <div class="source-name">Trade Records</div>
+          <div class="source-type">WhatsApp Business</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -6,8 +6,8 @@ import { geminiAI } from './gemini-ai.js';
 import { UIUtils } from './ui-utils.js';
 
 // Chart instances
-let cashFlowChart: any;
-let portfolioChart: any;
+let creditScoreChart: any;
+let creditHistoryChart: any;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Show welcome toast
   setTimeout(() => {
-    UIUtils.showToast('info', 'Welcome to Nest', 'Solana-powered AI CFO for your business');
+    UIUtils.showToast('info', 'Welcome to Nest', 'Your portable credit reputation on Solana');
   }, 1000);
 });
 
@@ -48,12 +48,12 @@ function handleChartFilterClick(this: HTMLElement): void {
   });
   this.classList.add('active');
 
-  // Update chart data
-  if (cashFlowChart) {
-    cashFlowChart.data.datasets.forEach((ds: any) => {
-      ds.data = ds.data.map((v: number) => v * (0.8 + Math.random() * 0.4));
+  // Update chart data - simulate credit history update
+  if (creditHistoryChart) {
+    creditHistoryChart.data.datasets.forEach((ds: any) => {
+      ds.data = ds.data.map((v: number) => v + Math.floor(Math.random() * 10 - 5));
     });
-    cashFlowChart.update();
+    creditHistoryChart.update();
   }
 }
 
@@ -183,11 +183,12 @@ export function completeOnboarding(): void {
     dashWalletAddr.textContent = solanaWallet.getShortAddress();
   }
   
-  UIUtils.showToast('success', 'AI CFO Activated!', `Gemini is now analyzing ${bizName}'s finances`);
+  UIUtils.showToast('success', 'Credit Profile Generated!', `${bizName}'s Nest Credit Score is being calculated`);
   
   setTimeout(() => {
     UIUtils.showView('dashboard');
     initDashboardCharts();
+    UIUtils.showToast('success', 'Score Ready', 'Your portable credit reputation is now on-chain');
   }, 1500);
 }
 
@@ -253,69 +254,80 @@ export async function refreshSolanaBalance(): Promise<void> {
 
 // Initialize dashboard charts
 export function initDashboardCharts(): void {
-  if (cashFlowChart) return;
+  if (creditScoreChart) return;
   
-  const ctx1 = document.getElementById('cashFlowChart') as HTMLCanvasElement;
+  // Credit Score Breakdown Chart
+  const ctx1 = document.getElementById('creditScoreChart') as HTMLCanvasElement;
   if (ctx1) {
-    cashFlowChart = new (window as any).Chart(ctx1.getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [
-          {
-            label: 'Money In',
-            data: [4500, 5200, 4800, 6100, 7500, 3800, 4200],
-            backgroundColor: 'rgba(34,197,94,0.8)',
-            borderRadius: 4
-          },
-          {
-            label: 'Money Out',
-            data: [2800, 3500, 3200, 4100, 3800, 2500, 2900],
-            backgroundColor: 'rgba(153,69,255,0.3)',
-            borderRadius: 4
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top', align: 'end' }
-        },
-        scales: {
-          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-          x: { grid: { display: false } }
-        }
-      }
-    });
-  }
-  
-  const ctx2 = document.getElementById('portfolioChart') as HTMLCanvasElement;
-  if (ctx2) {
-    portfolioChart = new (window as any).Chart(ctx2.getContext('2d'), {
+    creditScoreChart = new (window as any).Chart(ctx1.getContext('2d'), {
       type: 'doughnut',
       data: {
-        labels: ['SOL', 'M-Pesa', 'Bank USDC', 'Other'],
+        labels: ['Payment History', 'Credit Utilization', 'Credit Age', 'Data Diversity', 'Income Consistency'],
         datasets: [{
-          data: [52, 35, 10, 3],
+          data: [35, 25, 15, 15, 10],
           backgroundColor: [
-            'rgba(153,69,255,0.8)',
-            'rgba(34,197,94,0.8)',
-            'rgba(59,130,246,0.8)',
-            'rgba(100,100,100,0.3)'
+            'rgba(34,197,94,0.9)',   // Payment History - Green
+            'rgba(153,69,255,0.9)',  // Credit Utilization - Purple
+            'rgba(59,130,246,0.9)',  // Credit Age - Blue
+            'rgba(245,158,11,0.9)',  // Data Diversity - Orange
+            'rgba(236,72,153,0.9)'   // Income Consistency - Pink
           ],
-          borderWidth: 0
+          borderWidth: 0,
+          cutout: '65%'
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '70%',
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { padding: 20, usePointStyle: true }
+            labels: { padding: 15, usePointStyle: true, font: { size: 11 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context: any) {
+                return context.label + ': ' + context.raw + '% of score';
+              }
+            }
           }
+        }
+      }
+    });
+  }
+  
+  // Credit History Chart
+  const ctx2 = document.getElementById('creditHistoryChart') as HTMLCanvasElement;
+  if (ctx2) {
+    creditHistoryChart = new (window as any).Chart(ctx2.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+        datasets: [{
+          label: 'Credit Score',
+          data: [680, 695, 710, 705, 725, 730, 738, 742],
+          borderColor: 'rgba(34,197,94,1)',
+          backgroundColor: 'rgba(34,197,94,0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: 'rgba(34,197,94,1)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { 
+            beginAtZero: false, 
+            min: 600,
+            max: 800,
+            grid: { color: 'rgba(0,0,0,0.05)' }
+          },
+          x: { grid: { display: false } }
         }
       }
     });
@@ -392,6 +404,35 @@ export function askAI(question: string): void {
   sendAIMessage();
 }
 
+// Modal functions
+export function openAddSourceModal(): void {
+  const modal = document.getElementById('addSourceModal');
+  modal?.classList.remove('hidden');
+}
+
+export function closeAddSourceModal(): void {
+  const modal = document.getElementById('addSourceModal');
+  modal?.classList.add('hidden');
+}
+
+export function connectDataSource(source: string): void {
+  const sourceNames: Record<string, string> = {
+    'mpesa': 'M-Pesa',
+    'bank': 'Bank Account',
+    'gig': 'Gig Platform',
+    'crypto': 'Crypto Wallet',
+    'trade': 'Trade Records'
+  };
+  
+  UIUtils.showToast('info', 'Connecting...', `Initiating ${sourceNames[source]} connection flow`);
+  closeAddSourceModal();
+  
+  // Simulate connection process
+  setTimeout(() => {
+    UIUtils.showToast('success', 'Source Added', `${sourceNames[source]} connected successfully! +15 credit points`);
+  }, 2000);
+}
+
 // Expose functions to window for onclick handlers
 (window as any).nextStep = nextStep;
 (window as any).prevStep = prevStep;
@@ -405,3 +446,6 @@ export function askAI(question: string): void {
 (window as any).sendAIMessage = sendAIMessage;
 (window as any).askAI = askAI;
 (window as any).showView = (view: string) => UIUtils.showView(view);
+(window as any).openAddSourceModal = openAddSourceModal;
+(window as any).closeAddSourceModal = closeAddSourceModal;
+(window as any).connectDataSource = connectDataSource;
