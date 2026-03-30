@@ -44,13 +44,13 @@ export class GeminiAI {
   // Demo responses for when no API key is set
   private getDemoResponse(): string {
     const responses = [
-      "Based on your Solana transaction history, I recommend staking 30% of your idle SOL for passive yield. Marinade Finance offers liquid staking at ~6% APY.",
-      "Your M-Pesa to Solana tokenization shows strong weekly inflows. Consider setting up automated USDC savings on Jupiter to hedge against volatility.",
-      "I've analyzed your cash flow patterns. Your business typically receives 40% more payments on Fridays. Plan your inventory purchases accordingly.",
-      "Your wallet currently holds 142.5 SOL and $250 USDC. The portfolio is 98% Solana-native. Diversification into other SPL tokens could reduce risk.",
-      "Gemini detected: You have 3 recurring M-Pesa payments that could be automated via Solana Pay. This would save ~2 hours/week in manual processing.",
-      "Looking at your on-chain data, you're spending 15% more on supplier payments this month. Consider negotiating bulk discounts or exploring Just-in-Time inventory.",
-      "Your Solana USDC holdings could be earning 8-12% APY through lending protocols like Solend or marginfi. Would you like me to compare rates?"
+      "Based on your M-Pesa and bank transaction history, your payment consistency score is 94%. This strong pattern indicates reliable income streams and improves your creditworthiness.",
+      "Your credit utilization is at 23%, which is excellent. Keeping it below 30% positively impacts your Nest Credit Score and shows lenders you're not over-reliant on credit.",
+      "Gemini detected: Your gig income from Uber has been consistent for 6 months. This alternative income stream adds 15 points to your credit score - traditional bureaus would miss this entirely.",
+      "I've analyzed your cash flow patterns. You maintain positive balances 95% of the time. This stability signals low credit risk to potential lenders in the marketplace.",
+      "Your credit score improved 12 points this month. The main driver was connecting your Equity Bank account, which added transaction diversity to your credit profile.",
+      "Looking at your data, you could qualify for up to $8,000 in unsecured credit from Marinade Finance at 10% APR. Your reputation score of 742 puts you in their 'Preferred' tier.",
+      "Your ZK-proof credit signal has been verified 47 times by lenders this month. Your privacy remains intact - they verified your score without seeing your raw transaction data."
     ];
     return responses[Math.floor(Math.random() * responses.length)];
   }
@@ -65,8 +65,8 @@ export class GeminiAI {
 
     try {
       const context = walletAddress 
-        ? `You are a CFO assistant for a business using Solana blockchain. User wallet: ${walletAddress}. User asks: ${userMessage}`
-        : `You are a CFO assistant for a business. User asks: ${userMessage}`;
+        ? `You are a credit advisor for Nest, a decentralized credit reputation protocol on Solana. The user's wallet ${walletAddress} has a Nest Credit Score based on their real-world financial behavior (mobile money, bank accounts, gig work). Provide helpful, encouraging advice about creditworthiness, lending opportunities, and financial reputation. User asks: ${userMessage}`
+        : `You are a credit advisor for Nest, a decentralized credit reputation protocol. User asks: ${userMessage}`;
 
       const response = await fetch(`${this.API_URL}?key=${this.apiKey}`, {
         method: 'POST',
@@ -99,24 +99,24 @@ export class GeminiAI {
     return [
       {
         id: '1',
-        type: 'warning',
-        title: 'Cash Flow Alert',
-        description: 'Your M-Pesa till balance dropped 40% this week. Consider topping up for weekend sales.',
-        action: 'Ask Gemini →'
+        type: 'success',
+        title: 'Credit Score Boost',
+        description: 'Connecting your Uber driver income increased your score by 15 points. Gig work verification adds credibility traditional bureaus miss.',
+        action: 'View Details →'
       },
       {
         id: '2',
-        type: 'success',
-        title: 'Solana DeFi Opportunity',
-        description: 'You have 50 SOL idle. Gemini suggests staking for ~6% APY on Marinade Finance.',
-        action: 'Learn more →'
+        type: 'info',
+        title: 'ZK-Proof Verification',
+        description: '3 lenders verified your creditworthiness this week using zero-knowledge proofs. Your raw data stayed private.',
+        action: 'View Proof Log →'
       },
       {
         id: '3',
-        type: 'info',
-        title: 'AI Forecast',
-        description: 'Based on your on-chain and off-chain data, expect 12,400 USDC revenue next month (+18%).',
-        action: 'View analysis →'
+        type: 'success',
+        title: 'Pre-approved Credit Available',
+        description: 'Marinade Finance has pre-approved you for $8,000 at 10% APR based on your 742 Nest Credit Score.',
+        action: 'View Offer →'
       }
     ];
   }
