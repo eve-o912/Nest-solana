@@ -20,14 +20,20 @@ export interface WalletConnection {
 }
 
 export class SolanaWallet {
-  private connection: any;
+  private connection: any = null;
   private walletProvider: any = null;
   private walletPublicKey: any = null;
   private readonly NETWORK = 'mainnet-beta';
   private readonly RPC_URL = 'https://api.mainnet-beta.solana.com';
 
-  constructor() {
-    this.connection = new window.solanaWeb3.Connection(this.RPC_URL, 'confirmed');
+  private getConnection(): any {
+    if (!this.connection) {
+      if (!window.solanaWeb3) {
+        throw new Error('Solana Web3 library not loaded');
+      }
+      this.connection = new window.solanaWeb3.Connection(this.RPC_URL, 'confirmed');
+    }
+    return this.connection;
   }
 
   // Initialize wallet from window globals
@@ -35,7 +41,19 @@ export class SolanaWallet {
     try {
       const provider = (window as any).phantom?.solana;
       if (!provider) {
+        alert('Phantom wallet not found. Please install Phantom from phantom.app');
         throw new Error('Phantom wallet not installed');
+      }
+      
+      // Check if already connected
+      if (provider.isConnected) {
+        this.walletPublicKey = provider.publicKey;
+        this.walletProvider = provider;
+        return {
+          provider: this.walletProvider,
+          publicKey: this.walletPublicKey,
+          connected: true
+        };
       }
       
       const resp = await provider.connect();
@@ -49,6 +67,11 @@ export class SolanaWallet {
       };
     } catch (error: any) {
       console.error('Phantom connection error:', error);
+      if (error.code === 4001) {
+        alert('Connection rejected. Please approve the connection in Phantom.');
+      } else {
+        alert('Failed to connect Phantom: ' + error.message);
+      }
       return null;
     }
   }
@@ -78,8 +101,9 @@ export class SolanaWallet {
   async getBalance(): Promise<number> {
     if (!this.walletPublicKey) return 0;
     try {
-      const balance = await this.connection.getBalance(this.walletPublicKey);
-      return balance / 1e9; // Convert lamports to SOL
+      const conn = this.getConnection();
+      const balance = await conn.getBalance(this.walletPublicKey);
+      return balance / 1e9;
     } catch (error) {
       console.error('Balance fetch error:', error);
       return 0;
@@ -89,7 +113,8 @@ export class SolanaWallet {
   async getTokenAccounts(): Promise<any[]> {
     if (!this.walletPublicKey) return [];
     try {
-      const accounts = await this.connection.getParsedTokenAccountsByOwner(
+      const conn = this.getConnection();
+      const accounts = await conn.getParsedTokenAccountsByOwner(
         this.walletPublicKey,
         { programId: window.splToken.TOKEN_PROGRAM_ID }
       );
@@ -114,8 +139,8 @@ export class SolanaWallet {
     return !!this.walletPublicKey;
   }
 
-  getConnection(): any {
-    return this.connection;
+  getSolanaConnection(): any {
+    return this.getConnection();
   }
 
   getNetwork(): string {
